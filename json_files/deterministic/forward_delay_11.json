@@ -1,0 +1,50 @@
+{ "ESN_1": {  "n_units": 167,
+            "input_scaling": 1,
+            "noise_rc": 6e-5,
+            "rc_connectivity": 0.0054262249090146686,
+            "sr":0.17906049848348607,
+            "lr": 0.19276769251047887,
+            "fb_scaling":1e-2,
+            "input_connectivity":0.8793831655519287,
+            "fb_connectivity":0.1,
+            "topology": "random",
+            "activation": "tanh"
+                  },
+
+  "ESN_2": {  "n_units": 167,
+            "input_scaling": 1,
+            "noise_rc": 6e-5,
+            "rc_connectivity": 0.0015028266512035347,
+            "sr":0.22926146840244116,
+            "lr": 0.17321557911979132,
+            "fb_scaling":1e-2,
+            "input_connectivity":0.8207396360386542,
+            "fb_connectivity":0.1,
+            "topology": "random",
+            "activation": "tanh"
+                  },
+
+  "ESN_3": {  "n_units": 167,
+            "input_scaling": 1,
+            "noise_rc": 6e-5,
+            "rc_connectivity": 0.00546551981121402,
+            "sr":0.2153652271898035,
+            "lr": 0.1641871400933418,
+            "fb_scaling":1e-2,
+            "input_connectivity":0.11150605018506314,
+            "fb_connectivity":0.1,
+            "topology": "random",
+            "activation": "tanh"
+                  },
+
+   "Readout": {"output_connectivity": 0.5},
+
+  "RL": { "eta": 0.014736835754036991,
+          "beta": 5,
+          "r_th": 0.006975544340245059,
+          "reward": [1.00, 0.75, 0.5, 0.25],
+          "penalty": -0.01,
+          "decay": 0.3
+  }
+}
+

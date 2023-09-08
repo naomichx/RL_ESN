@@ -1,0 +1,12 @@
+{  "n_session": 1,
+    "nb_train" :1000,
+    "n_cue"     : 4,
+    "n_position": 4,
+    "n_choice": 2,
+    "n_init_time": 5,
+    "n_input_time_1" : 5,
+    "n_input_time_2" : 5,
+    "n_end_time": 1,
+    "n_input_delay": 0,
+    "reward_probabilities"     : [1.00, 1.00, 1.00, 1.00]
+}

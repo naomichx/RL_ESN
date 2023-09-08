@@ -1,0 +1,10 @@
+#*.DS_Store
+optuna_results
+generalization_test
+topology_test
+_optuna_results
+optuna_deep_model_.db
+optuna_hyperdirect.db
+results
+fig
+old/
