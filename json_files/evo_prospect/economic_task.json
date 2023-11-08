@@ -1,0 +1,9 @@
+{  "n_session": 1,
+    "nb_train" :300,
+    "n_init_time": 5,
+    "n_input_time_1" : 3,
+    "n_input_time_2" : 3,
+    "n_end_time": 0,
+    "n_input_delay": 0
+}
+

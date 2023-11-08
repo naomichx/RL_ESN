@@ -29,18 +29,40 @@ def define_path(deterministic,delay, gen_test_indiv=False, val_gen_test=False,te
     elif val_gen_test and not gen_test_indiv:
         path += 'val_gen_test/'
     elif temp_gen_test:
-        path += 'temporal_generalization_test/'
-    path += 'delay_' + str(delay) + '/'
+        path += 'temp_gen_test/'
+    else:
+        path += 'delay_' + str(delay) + '/'
+
     return path
 
-def setup_saving_files(model_type, path, task_file,model_file):
+def define_path_same_params(deterministic,delay, overlap,gen_test_indiv=False, val_gen_test=False,temp_gen_test=False):
+    if deterministic:
+        path = 'results/same_parameters/deterministic/'
+    else:
+        path = 'results/same_parameters/stochastic/'
+    if gen_test_indiv and val_gen_test:
+        path += 'gen_test_indiv/'
+    elif val_gen_test and not gen_test_indiv:
+        path += 'val_gen_test/'
+    elif temp_gen_test:
+        if overlap:
+            path +='temp_gen_test_overlap_easier/'
+        else:
+            path += 'temp_gen_test_no_overlap/'
+    else:
+        path += 'delay_' + str(delay) + '/'
+
+    return path
+
+def setup_saving_files(model_type, path, task_file,model_file,n_seed,i, testing=False):
     with open(os.path.join(os.path.dirname(__file__), model_file)) as f:
         model_parameters = json.load(f)
-
     with open(task_file, "r") as task_f:
         task_parameters = json.load(task_f)
-    loc_time = time.ctime(time.time())
-    specific_path = path + model_type + '/'
+    if testing:
+        specific_path = path + model_type+ '_testing' + '/'
+    else:
+        specific_path = path + model_type + '/'
     isExist = os.path.exists(path)
     if not isExist:
         # Create a new directory because it does not exist
@@ -53,44 +75,73 @@ def setup_saving_files(model_type, path, task_file,model_file):
         os.makedirs(specific_path)
         print("The new directory is created!")
     print('Folder to save:', specific_path)
-
     index = 0
     while json_exists(specific_path + "task_{}".format(str(index)) + ".json"):
         index += 1
     task_json = specific_path + "task_{}".format(str(index)) + ".json"
     model_json = specific_path + "model_{}".format(str(index)) + ".json"
-
     with open(task_json, "w") as to:
         json_string = json.dumps(task_parameters)
         json.dump(json_string, to)
-
     with open(model_json, "w") as to:
         json_string = json.dumps(model_parameters)
         json.dump(json_string, to)
+    if n_seed > 1:
+        seed_path = specific_path + '/{}/'.format(i)
+        isExist = os.path.exists(seed_path)
+        if not isExist:
+            os.makedirs(seed_path)
+        else:
+            print("The new directory was already created!")
+        specific_path = seed_path
+    else:
+        specific_path = None
     return specific_path
 
-def save_files(exp,specific_path):
-    np.save(arr=exp.legal_choices_array['session 0'],
+def save_files(exp,specific_path, testing=False):
+    if testing:
+        legal_choices_array = exp.legal_choices_array_testing
+        success_array = exp.success_array_testing
+        success_array_best_first = exp.success_array_best_first_testing
+        success_array_best_last = exp.success_array_best_last_testing
+        #all_W_out = exp.model.all_W_out_testing
+        record_output_activity = exp.model.record_output_activity
+        all_trials = exp.all_trials_testing
+    else:
+        legal_choices_array = exp.legal_choices_array
+        success_array = exp.success_array
+        success_array_best_first = exp.success_array_best_first
+        success_array_best_last = exp.success_array_best_last
+        #all_W_out = exp.model.all_W_out
+        record_output_activity = exp.model.record_output_activity
+        all_trials = exp.all_trials
+
+    np.save(arr=legal_choices_array['session 0'],
             file=nextnonexistent(
                 specific_path + 'legal_choice_array_n_train_{}'.format(exp.task.parameters["nb_train"]) + '.npy'))
 
-    np.save(arr=exp.success_array['session 0'],
+    np.save(arr=success_array['session 0'],
             file=nextnonexistent(
                 specific_path + 'array_n_train_{}'.format(exp.task.parameters["nb_train"]) + '.npy'))
 
-    np.save(arr=exp.success_array_best_first['session 0'],
+    np.save(arr=success_array_best_first['session 0'],
             file=nextnonexistent(
                 specific_path + 'best_first_array_n_train_{}'.format(exp.task.parameters["nb_train"]) + '.npy'))
 
-    np.save(arr=exp.success_array_best_last['session 0'],
+    np.save(arr=success_array_best_last['session 0'],
             file=nextnonexistent(
                 specific_path + 'best_last_array_n_train_{}'.format(exp.task.parameters["nb_train"]) + '.npy'))
 
-    np.save(arr=exp.model.all_W_out,
-            file=nextnonexistent(specific_path + 'all_W_out' + '.npy'))
+    #np.save(arr=all_W_out,
+     #       file=nextnonexistent(specific_path + 'all_W_out' + '.npy'))
 
-    np.save(arr=exp.model.record_output_activity,
+    np.save(arr=record_output_activity,
             file=nextnonexistent(specific_path + 'output_activity' + '.npy'))
+
+    for name in ('all_trials', 'delay', 'input_time_1','input_time_2'):
+        np.save(arr=all_trials['session 0'][name],
+                file=nextnonexistent(specific_path + name + '.npy'))
+
 
 def json_exists(file_name):
     return os.path.exists(file_name)
@@ -135,7 +186,6 @@ def merge_two_dicts(x, y):
 
 def plot_several_results(list_of_arrays, labels, avg_filter = 200, title = 'Percentage of success', save=False,
                          filename_to_save=None):
-    colors = ['black', 'green', 'blue', 'red', 'yellow', 'orange', 'pink']
     cmap = plt.get_cmap("tab20b", 20)
     C = [cmap(2 + i * 4) for i in range(len(list_of_arrays))]
     plt.subplots(figsize=(12, 5))
@@ -205,7 +255,12 @@ def plot_output_activity(output_array, n, save=False, folder_to_save=None, deter
         plt.ylabel(title)
         plt.subplots_adjust(right=0.75)
         if save:
-            plt.savefig(nextnonexistent(folder_to_save + name + str(i) + '.pdf'))
+            isExist = os.path.exists(folder_to_save + 'output_activity_fig/')
+            if not isExist:
+                # Create a new directory because it does not exist
+                os.makedirs(folder_to_save + 'output_activity_fig/')
+                print("The new directory is created!")
+            plt.savefig(nextnonexistent(folder_to_save + 'output_activity_fig/' + str(i) + '.pdf'))
         if show:
             plt.show()
 
@@ -298,6 +353,9 @@ def W_initializer_SW_1000(*shape, seed=42, sr=None, **kwargs):
     #plt.show()
     return W
 
+
+
+
 def connect(P, degree=90, k=10):
     """
     Build a connection matrix W
@@ -327,6 +385,9 @@ def W_initializer_1000(*shape, seed=42, sr=None, **kwargs):
     cells_pos = np.load(filename)
     W = connect(cells_pos)
     return W
+
+
+
 
 def W_initializer_300(*shape, seed=42, sr=None, **kwargs):
     " Create initialization function for W"

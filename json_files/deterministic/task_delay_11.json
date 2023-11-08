@@ -1,5 +1,5 @@
 {  "n_session": 1,
-    "nb_train" :1000,
+    "nb_train" :700,
     "n_cue"     : 4,
     "n_position": 4,
     "n_choice": 2,

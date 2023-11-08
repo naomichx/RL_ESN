@@ -89,11 +89,98 @@ class Task:
             self.n_end_1 = self.n_init_2 + self.n_input_time_2 + self.n_end_2 - (self.n_init_1 + self.n_input_time_1)
 
     def get_random_trial_length(self):
-        self.n_input_time_1 = np.random.choice([i for i in range(3, 10)])
-        self.n_input_time_2 = np.random.choice([i for i in range(3, 10)])
+        #self.n_input_time_1 = np.random.choice([i for i in range(5, 10)])
+        #self.n_input_time_2 = np.random.choice([i for i in range(5, 10)])
+
+        self.n_input_time_1 = 5
+        self.n_input_time_2 = 5
         self.n_input_delay = np.random.choice([i for i in range(0, 20)])
         self.n_init_1 = self.n_init_time
         self.n_init_2 = self.n_init_time + self.n_input_delay
+        if self.n_init_1 + self.n_input_time_1 > self.n_init_2 + self.n_input_time_2:
+            self.n_end_1 = self.n_end_time
+            self.n_end_2 = self.n_init_1 + self.n_input_time_1 + self.n_end_1 - (self.n_init_2 + self.n_input_time_2)
+        else:
+            self.n_end_2 = self.n_end_time
+            self.n_end_1 = self.n_init_2 + self.n_input_time_2 + self.n_end_2 - (self.n_init_1 + self.n_input_time_1)
+
+    def get_random_trial_length_limited(self):
+        self.n_input_time_1 = np.random.choice([i for i in range(5, 10)])
+        self.n_input_delay = np.random.choice([i for i in range(0, 20)])
+        self.n_input_time_2 = 30 - self.n_end_time - self.n_init_time - self.n_input_delay
+
+        self.n_init_1 = self.n_init_time
+        self.n_init_2 = self.n_init_time + self.n_input_delay
+        if self.n_init_1 + self.n_input_time_1 > self.n_init_2 + self.n_input_time_2:
+            self.n_end_1 = self.n_end_time
+            self.n_end_2 = self.n_init_1 + self.n_input_time_1 + self.n_end_1 - (self.n_init_2 + self.n_input_time_2)
+        else:
+            self.n_end_2 = self.n_end_time
+            self.n_end_1 = self.n_init_2 + self.n_input_time_2 + self.n_end_2 - (self.n_init_1 + self.n_input_time_1)
+
+        #print(self.n_init_1 + self.n_input_time_1 + self.n_end_1)
+        #print(self.n_init_2 + self.n_input_time_2 + self.n_input_delay + self.n_end_2)
+
+    def get_random_trial_length_end_fixed(self):
+        self.n_input_time_1 = np.random.choice([i for i in range(15, 25)])
+        #self.n_input_delay = np.random.choice([i for i in range(8, self.n_input_time_1-3)])
+        self.n_input_delay = np.random.choice([i for i in range(int(self.n_input_time_1/2),self.n_input_time_1-3 )])
+        self.n_input_time_2 = self.n_input_time_1 - self.n_input_delay
+
+        self.n_init_1 = 29 - self.n_input_time_1
+        self.n_init_2 = 29 - self.n_input_time_2
+        self.n_end_2 = self.n_end_time
+        self.n_end_1 = self.n_end_time
+
+        #print(self.n_init_1 + self.n_input_time_1 + self.n_end_1)
+        #print(self.n_init_2 + self.n_input_time_2 + self.n_input_delay+ self.n_end_2)
+
+
+        """if self.n_init_1 + self.n_input_time_1 > self.n_init_2 + self.n_input_time_2:
+            self.n_end_1 = self.n_end_time
+            self.n_end_2 = self.n_init_1 + self.n_input_time_1 + self.n_end_1 - (self.n_init_2 + self.n_input_time_2)
+        else:
+            self.n_end_2 = self.n_end_time
+            self.n_end_1 = self.n_init_2 + self.n_input_time_2 + self.n_end_2 - (self.n_init_1 + self.n_input_time_1)"""
+
+    def get_random_trial_length_overlap(self):
+        self.n_input_time_1 = np.random.choice([i for i in range(10, 18)])
+        self.n_input_delay = np.random.choice([i for i in range(0, self.n_input_time_1-7)])
+        #self.n_input_delay = np.random.choice([i for i in range(0, self.n_input_time_1 -4)])
+        self.n_input_time_2 = 30 - self.n_end_time - self.n_init_time - self.n_input_delay
+
+        self.n_init_1 = self.n_init_time
+        self.n_init_2 = self.n_init_time + self.n_input_delay
+        if self.n_init_1 + self.n_input_time_1 > self.n_init_2 + self.n_input_time_2:
+            self.n_end_1 = self.n_end_time
+            self.n_end_2 = self.n_init_1 + self.n_input_time_1 + self.n_end_1 - (self.n_init_2 + self.n_input_time_2)
+        else:
+            self.n_end_2 = self.n_end_time
+            self.n_end_1 = self.n_init_2 + self.n_input_time_2 + self.n_end_2 - (self.n_init_1 + self.n_input_time_1)
+
+    def get_random_trial_length_no_overlap(self):
+        self.n_input_time_1 = np.random.choice([i for i in range(5, 10)])
+        self.n_input_delay = np.random.choice([i for i in range(self.n_input_time_1, 20)])
+        self.n_input_time_2 = 30 - self.n_end_time - self.n_init_time - self.n_input_delay
+
+        self.n_init_1 = self.n_init_time
+        self.n_init_2 = self.n_init_time + self.n_input_delay
+        if self.n_init_1 + self.n_input_time_1 > self.n_init_2 + self.n_input_time_2:
+            self.n_end_1 = self.n_end_time
+            self.n_end_2 = self.n_init_1 + self.n_input_time_1 + self.n_end_1 - (self.n_init_2 + self.n_input_time_2)
+        else:
+            self.n_end_2 = self.n_end_time
+            self.n_end_1 = self.n_init_2 + self.n_input_time_2 + self.n_end_2 - (self.n_init_1 + self.n_input_time_1)
+
+
+
+    def set_trial_delay(self, delay):
+        self.n_input_delay = delay
+        self.n_init_1 = self.n_init_time
+        self.n_init_2 = self.n_init_time + self.n_input_delay
+        self.n_input_time_1 = 5
+        self.n_input_time_2 = 5
+
         if self.n_init_1 + self.n_input_time_1 > self.n_init_2 + self.n_input_time_2:
             self.n_end_1 = self.n_end_time
             self.n_end_2 = self.n_init_1 + self.n_input_time_1 + self.n_end_1 - (self.n_init_2 + self.n_input_time_2)
@@ -152,7 +239,6 @@ class Task:
         cue = np.argwhere(trial[:, choice] == 1)[0]
         return self.reward_probabilities[int(cue)]
 
-
     def get_reward(self, trial, choice, reward, penalty):
         """Return reward probability associated with a choice"""
         if self.is_legal_choice(trial, choice):
@@ -167,7 +253,6 @@ class Task:
     def invert_probabilities(self):
         self.reward_probabilities = np.ones(self.n_cue) - self.reward_probabilities
 
-
     def chronogram(self):
         schedule_1 = [(self.n_init_1, (0, 0)), (self.n_input_time_1, (1, 1)), (self.n_end_1, (0, 0))]
         schedule_2 = [(self.n_init_2, (0, 0)), (self.n_input_time_2, (1, 1)), (self.n_end_2, (0, 0))]
@@ -177,6 +262,32 @@ class Task:
             np.interp(np.arange(n), [0, n - 1], [beg, end])
             for (n, (beg, end)) in schedule_2])
 
+    def get_trial_with_chronogram_dual(self, trial):
+        indexes = np.where(trial.sum(axis=1) == 1)[0]
+        trial_with_best_cue, trial_with_worst_cue = self.separate_cues(trial)
+        L1 = []
+        L2 = []
+        k = random.choice([0, 1])
+        if k == 0:
+            self.best_trial_first = True
+            chrono_1 = self.chronogram()[0]
+            chrono_2 = self.chronogram()[1]
+        else:
+            self.best_trial_first = False
+            chrono_1 = self.chronogram()[1]
+            chrono_2 = self.chronogram()[0]
+        for i, v in enumerate(trial_with_best_cue.ravel()):
+            L1.append(v * chrono_1)
+        for j, v in enumerate(trial_with_worst_cue.ravel()):
+            L2.append(v * chrono_2)
+        trial_with_chronogram_1 = np.reshape(np.transpose(L1), (self.n_init_1 + self.n_input_time_1 +
+                                                                       self.n_end_1, self.n_cue * self.n_pos))
+        trial_with_chronogram_2 = np.reshape(np.transpose(L2), (self.n_init_1 + self.n_input_time_1 +
+                                                                     self.n_end_1, self.n_cue * self.n_pos))
+        if self.best_trial_first:
+            return trial_with_chronogram_1, trial_with_chronogram_2
+        else:
+            return trial_with_chronogram_2, trial_with_chronogram_1
 
     def get_trial_with_chronogram(self, trial):
         indexes = np.where(trial.sum(axis=1) == 1)[0]
@@ -195,9 +306,7 @@ class Task:
         trial_with_chronogram = np.transpose(L)
         trial_with_chronogram = np.reshape(trial_with_chronogram, (self.n_init_1 + self.n_input_time_1 +
                                             self.n_end_1, self.n_cue * self.n_pos))
-
         return trial_with_chronogram
-
 
     def plot_chronogram(self, trial_with_chronogram):
 
@@ -221,30 +330,28 @@ class Task:
 
         plt.tight_layout()
         plt.show()
-
-
-
-
 #-----------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
-    task = Task(filename='json_files/task_deterministic_delay.json')
-    trial = task.get_random_trials(n=1)
-
-    # Get a random trial
-    """best_choice = task.get_best_choice(trial, deterministic=True, reward=[1, 0])
-
-    print('best choice', best_choice)
-
-    print('reward', task.get_reward(trial,best_choice, [1, 0], -0.01))"""
-
-    trials = task.trials
-    trial_indexes = [i for i in range(len(trials))]
+    task = Task(filename='json_files/stochastic/task_delay_11.json')
 
 
+    """task.get_random_trial_length_limited()
+
+    trial_with_chronogram_1, trial_with_chronogram_2 = task.get_trial_with_chronogram_dual(trial)
+
+    print('shape', np.shape(trial_with_chronogram_1))
+    print('shape 2', np.shape(trial_with_chronogram_2))
+
+    print('trial', trial)
+    print('best choice', task.get_best_choice(trial))
+    print('best first', task.best_trial_first)"""
+
+        #task.plot_chronogram(trial_with_chronogram_1)
+        #task.plot_chronogram(trial_with_chronogram_2)
 
     #print('Find the new index of the selected trial:', np.where(trials==trial))
     #print('Find initial index:', trial_indexes[trials.index(trial)])
@@ -254,16 +361,19 @@ if __name__ == "__main__":
     #legal_choices = task.get_legal_choices(trial)
     #print(legal_choices)
 
-    """for i in range(1):
-        task.get_random_trial_length()
-        print(task.n_input_time_1)
-        print(task.n_input_time_2)
-        print(task.n_input_delay)
+    for i in range(10):
+        task.get_random_trial_length_overlap()
+        #print(task.n_input_time_1)
+        #print(task.n_input_time_2)
+        #print(task.n_input_delay)
         print('-------')
 
+
         trial = task.get_random_trials(n=1)
-        trial_with_chronogram = task.get_trial_with_chronogram(trial)
-        task.plot_chronogram(trial_with_chronogram)"""
+        choice = task.get_best_choice(trial, deterministic=False)
+        print(task.get_reward_probability(trial, choice))
+        #trial_with_chronogram = task.get_trial_with_chronogram(trial)
+        #task.plot_chronogram(trial_with_chronogram)
 
     #print('best:', best_c)
     #print('worst:', worst_c)
